@@ -21,11 +21,10 @@
 
 | Файл / папка | Назначение |
 |---|---|
-| `book_recommender.ipynb` | Основной ноутбук: EDA, модели, метрики, выводы |
-| `problem_statement_1.md` | Постановка задачи |
-| `archive.zip` | Исходный датасет Goodbooks-10k (Kaggle) |
+| `book_recommender_HW_LiuboshenkoA.ipynb` | Основной ноутбук: EDA, модели, метрики, выводы |
+| `archive.zip` | Исходный датасет Goodbooks-10k (Kaggle). В git не хранится, скачивается перед запуском (см. "Как запустить") |
 | `data/` | Распакованные CSV (создаётся автоматически при запуске ноутбука, в git не хранится) |
-| `figures/` | Графики: `eda_*.png` (EDA) и `eval_models_comparison.png` (сравнение моделей) |
+| `figures/` | Графики: `eda_*.png` (EDA) и `eval_models_comparison.png` (сравнение моделей), создаются при запуске ноутбука |
 | `requirements.txt` | Зависимости с зафиксированными версиями |
 | `.python-version` | Версия Python (3.12) |
 
@@ -42,23 +41,49 @@
 
 ## Как запустить
 
-Нужен Python 3.12. Пакет `scikit-surprise` собирается из исходников, поэтому в системе должен быть компилятор C (`gcc`) и заголовочные файлы Python.
+Нужны `git` и Python 3.12 (версия зафиксирована в `.python-version`). Если Python ставится из пакетов Ubuntu, для создания окружения нужен ещё пакет `python3.12-venv`.
+### 1. Клонировать репозиторий
+
+```bash
+git clone https://github.com/Liuboshenko/Prototype_of_a_book_recommendation_service.git
+cd Prototype_of_a_book_recommendation_service
+```
+
+### 2. Скачать датасет
+
+Данные в git не хранятся. Архив Goodbooks-10k (около 12 МБ) нужно положить в корень репозитория под именем `archive.zip`. Аккаунт Kaggle для этой команды не нужен:
+
+```bash
+curl -L -o archive.zip https://www.kaggle.com/api/v1/datasets/download/zygmunt/goodbooks-10k
+```
+
+Архив можно скачать и вручную кнопкой Download на [странице датасета](https://www.kaggle.com/datasets/zygmunt/goodbooks-10k) и сохранить в корень репозитория под тем же именем `archive.zip`. Распаковывать его не нужно: при первом запуске ноутбук сам распакует архив в `data/`.
+
+### 3. Создать окружение и установить зависимости
 
 ```bash
 python3.12 -m venv venv3.12
 source venv3.12/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
+```
 
+### 4. Запустить ноутбук
+
+```bash
 # Регистрация ядра Jupyter внутри окружения
 python -m ipykernel install --sys-prefix --name venv3.12 --display-name "Python 3.12 (venv3.12)"
 
-jupyter notebook book_recommender.ipynb
+jupyter notebook book_recommender_HW_LiuboshenkoA.ipynb
 ```
 
-В ноутбуке выбрать ядро `Python 3.12 (venv3.12)` и выполнить "Restart & Run All". Архив с данными распакуется в `data/` автоматически.
+В ноутбуке выбрать ядро `Python 3.12 (venv3.12)`, затем в меню Kernel выбрать Restart Kernel and Run All Cells. Графики сохранятся в `figures/`.
 
-Полный прогон занимает около 8 минут, из них около 7 минут уходит на этап 5: метрики всех моделей для 34 288 пользователей и проверку объяснений. Сразу после импортов число потоков OpenBLAS ограничено четырьмя (`threadpool_limits`): иначе на многоядерной машине матричные операции занимают все ядра и система перестаёт отвечать.
+Ноутбук можно выполнить и из терминала, без браузера. Результаты запишутся в тот же файл:
+
+```bash
+jupyter nbconvert --to notebook --execute --inplace book_recommender_HW_LiuboshenkoA.ipynb
+```
 
 ## Логика решения
 
